@@ -1,0 +1,39 @@
+body{
+	display: flex;
+	background-color: yellow;
+	flex-direction: column;
+	align-items: center;
+}
+.snippet{
+	height: 300px;
+	width: 200px;
+	border-color: black;
+	border-radius: 10px;
+	border-style: solid;
+	background-color: white;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: 300px;
+	overflow-x: scroll;
+    white-space: wrap;
+    margin: 15px;
+
+    
+}
+.body{
+
+	flex-direction: column;
+	align-items: center;
+	padding: 3px;
+	
+}
+.snippetContainer{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	padding: 10px;
+	margin: 10px;
+
+
+}

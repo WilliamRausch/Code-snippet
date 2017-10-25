@@ -1,30 +1,78 @@
-const express          = require("express");
-const path             = require("path");
-const mustacheExpress  = require("mustache-express");
-const routes           = require("./routes/index");
-const bodyParser       = require("body-parser");
-const expressValidator = require("express-validator");
-const session = require("express-session");
-const app              = express();
-const fs = require("fs");
-const mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
+const express = require("express");
+const mustacheExpress = require("mustache-express");
+const path = require("path");
+const routes = require("./routes/index.js");
+const morgan = require("morgan");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
+const flash = require('express-flash-messages');
+const User = require("./models/user");
+const Snippet = require("./models/snippet");
 
-mongoose.connect('mongodb://localhost:27017/snippetdb');
+const app = express();
+
+mongoose.connect("mongodb://localhost:27017/snippetdb");
+//mongoose.createConnection("mongodb://localhost:27017/snippetuserdb");
+
+app.use(express.static(path.join(__dirname, "public")));
 
 app.engine("mustache", mustacheExpress());
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "mustache");
 app.set("layout", "layout");
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false}));
-app.use(expressValidator());
-app.use(session({
-  secret: "Hangman",
-  resave: false,
-  saveUninitialized: false
+app.use(bodyParser.urlencoded({
+    extended: false
 }));
+
+app.use(morgan("dev"));
+
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        User.authenticate(username, password, function(err, user) {
+            if (err) {
+                return done(err)
+            }
+            if (user) {
+                return done(null, user)
+            } else {
+                return done(null, false, {
+                    message: "There is no user with that username and password."
+                })
+            }
+        })
+    }));
+
+passport.serializeUser(function(user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+    User.findById(id, function(err, user) {
+        done(err, user);
+    });
+});
+
+app.use(function (req, res, next) {
+  res.locals.user = req.user;
+  next();
+})
+
+app.use(session({
+    secret: 'ssshhhhh',
+    resave: false,
+    saveUninitialized: false,
+    store: new(require('express-sessions'))({
+        storage: 'mongodb'
+    })
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
 app.use(routes);
 

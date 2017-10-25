@@ -1,17 +1,60 @@
-<form action="/create" method="post">
-  <input type="text" name="name" placeholder="Username">
-  
-  <button type="submit">Create</button>
+<a href = "/create">NEW SNIPPET</a>
+
+<form action="/languageFiltered" method="post">
+  <input type="text" name="language" placeholder="languageSearch">
+  <button type="submit">Filter</button>
 </form>
-<form action="/edit" method="put">
-  <input type="text" name="name" placeholder="Username">
+<form action="/tagFiltered" method="post">
+  <input type="text" name="tags" placeholder="tagSearch">
+  <button type="submit">Filter</button>
+</form>
+<div class = "snippetContainer">
+  {{#snippets}}
+  <div class = "snippet">
+<div class = "name">
+<p> NAME: {{name}}</p>
+ 
+  </div>
+  <div class = "body">
+  <p> Snippet </p>
+  {{body}}
+  </div>
+  <div class = "notes" >
+  <p> notes:
+  {{notes}}
+  </p>
+  </div>
+  <div class = "language">
+  <p> language: </p>
+  {{language}}
+  </div>
+  <div class = "tags">
+  <p> tags </p>
+  {{tag}}
+  </div>
+  <div class = "user">
+  <p> created by: </p> {{user}}
+  </div>
+  <div class = "buttons">
+    <form action="/delete/{{id}}" method="get">
+ 
+  
+  <button type="submit">Delete</button>
+  </form>
+  <form action="/edit/{{id}}" method="put">
+ 
   
   <button type="submit">Edit</button>
 </form>
-<form action="/" method="delete">
-  <input type="text" name="name" placeholder="Username">
-  
-  <button type="submit">Delete</button>
+<a href = "/view/{{id}}">View Snippet</a>
+
+</div>
+</div>
+
+
+  {{/snippets}}
+  </div>
+
 </form>
 
 
